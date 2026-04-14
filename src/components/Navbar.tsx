@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
   { to: "/", label: "Home" },
