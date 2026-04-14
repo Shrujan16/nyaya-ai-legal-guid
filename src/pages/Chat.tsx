@@ -36,7 +36,7 @@ const Chat = () => {
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: dummyResponses.default },
+        { role: "assistant", content: dummyResponse },
       ]);
       setIsTyping(false);
     }, 1500);
@@ -51,9 +51,9 @@ const Chat = () => {
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent text-primary">
               <Sparkles className="h-8 w-8" />
             </div>
-            <h2 className="font-heading text-2xl font-bold">How can I help you today?</h2>
+            <h2 className="font-heading text-2xl font-bold">AI Legal Assistant</h2>
             <p className="mt-2 max-w-md text-muted-foreground">
-              Ask me any legal question in plain language. I'll do my best to provide helpful information.
+              Ask any legal question in simple language and get easy-to-understand guidance instantly.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {suggestions.map((s) => (
