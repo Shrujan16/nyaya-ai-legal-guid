@@ -39,7 +39,7 @@ const Home = () => {
         <div className="relative mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm font-medium text-muted-foreground">
             <Zap className="h-4 w-4 text-primary" />
-            Powered by Artificial Intelligence
+            NyayaAI
           </div>
           <h1 className="font-heading text-4xl font-extrabold leading-tight tracking-tight md:text-6xl">
             Legal Help Made Simple
@@ -48,21 +48,23 @@ const Home = () => {
               with AI
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            NyayaAI makes legal information accessible to everyone. Ask questions, generate documents, and
-            understand your rights — all in one place.
+          <p className="mx-auto mt-4 max-w-2xl text-lg font-medium text-foreground/80">
+            Understand your rights, get instant legal guidance, and generate legal documents — all in one place.
+          </p>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground">
+            NyayaAI is your personal AI legal assistant designed for everyday people in India. Whether you are facing a legal issue, need help drafting documents, or want to understand your rights, NyayaAI provides simple, fast, and accessible support.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="gap-2 rounded-xl px-8 text-base shadow-lg shadow-primary/25">
               <Link to="/chat">
                 <MessageSquare className="h-5 w-5" />
-                Start Chatting
+                Ask a Question
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="gap-2 rounded-xl px-8 text-base">
               <Link to="/rights">
                 <Shield className="h-5 w-5" />
-                Explore Rights
+                Know Your Rights
               </Link>
             </Button>
           </div>
@@ -137,7 +139,7 @@ const Home = () => {
           <span className="flex items-center gap-2 font-heading font-semibold text-foreground">
             <Scale className="h-4 w-4 text-primary" /> NyayaAI
           </span>
-          <span>© 2026 NyayaAI. For informational purposes only. Not legal advice.</span>
+          <span>Empowering every citizen with legal awareness and confidence.</span>
         </div>
       </footer>
     </div>
