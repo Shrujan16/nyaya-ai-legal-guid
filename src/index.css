@@ -65,3 +65,7 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
 }
+
+#lovable-badge {
+  display: none !important;
+}
