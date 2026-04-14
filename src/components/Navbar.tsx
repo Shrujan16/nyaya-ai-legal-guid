@@ -38,12 +38,16 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
+          <ThemeToggle />
         </div>
 
         {/* Mobile toggle */}
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(!open)}>
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
 
       {/* Mobile menu */}
