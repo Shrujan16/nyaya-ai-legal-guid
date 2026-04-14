@@ -133,6 +133,14 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Powered by AI */}
+      <section className="px-4 py-12 text-center">
+        <h3 className="font-heading text-xl font-bold md:text-2xl">Powered by AI</h3>
+        <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+          NyayaAI uses artificial intelligence to simplify complex legal information into easy-to-understand guidance for everyone.
+        </p>
+      </section>
+
       {/* Footer */}
       <footer className="border-t px-4 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
