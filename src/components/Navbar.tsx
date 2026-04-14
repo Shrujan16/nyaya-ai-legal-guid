@@ -23,7 +23,6 @@ const Navbar = () => {
           <img src={logo} alt="NyayaAI Logo" className="h-8 w-8 rounded-full object-cover" />
           NyayaAI
         </Link>
-        </Link>
 
         {/* Desktop */}
         <div className="hidden items-center gap-1 md:flex">
