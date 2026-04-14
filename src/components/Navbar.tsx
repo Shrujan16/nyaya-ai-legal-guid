@@ -20,8 +20,9 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-heading text-xl font-bold text-primary">
-          <Scale className="h-6 w-6" />
+          <img src={logo} alt="NyayaAI Logo" className="h-8 w-8 rounded-full object-cover" />
           NyayaAI
+        </Link>
         </Link>
 
         {/* Desktop */}
