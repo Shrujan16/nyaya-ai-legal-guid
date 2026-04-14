@@ -131,7 +131,7 @@ const Chat = () => {
           </Button>
         </form>
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          NyayaAI provides general information only. Always consult a qualified lawyer for specific legal matters.
+          This is AI-generated guidance and should not replace professional legal advice.
         </p>
       </div>
     </div>
