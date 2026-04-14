@@ -7,26 +7,14 @@ import { Card } from "@/components/ui/card";
 type Message = { role: "user" | "assistant"; content: string };
 
 const suggestions = [
-  "What are my rights if my landlord refuses to return my security deposit?",
-  "How do I file a consumer complaint online?",
-  "What is the process for getting a mutual divorce?",
-  "Can my employer terminate me without notice?",
+  "What are my rights if police arrest me?",
+  "My landlord is not returning my deposit, what should I do?",
+  "How can I file an FIR in India?",
+  "What are my rights at the workplace?",
+  "Can police search my house without a warrant?",
 ];
 
-const dummyResponses: Record<string, string> = {
-  default: `That's a great legal question! Here's what I can tell you:
-
-**General Guidance:**
-Under Indian law, your rights are protected by various statutes and constitutional provisions. The specific answer depends on the jurisdiction and circumstances involved.
-
-**Recommended Steps:**
-1. Document all relevant facts and communications
-2. Consult the applicable statute or regulation
-3. Consider seeking formal legal counsel for complex matters
-4. You may also approach the relevant legal aid authority for free assistance
-
-**Important Note:** This is general information and should not be construed as legal advice. For specific cases, please consult a qualified advocate.`,
-};
+const dummyResponse = `If you are arrested, you have the right to know the reason for your arrest, the right to remain silent, and the right to consult a lawyer. You must be presented before a magistrate within 24 hours. These rights are protected under Indian law.`;
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
