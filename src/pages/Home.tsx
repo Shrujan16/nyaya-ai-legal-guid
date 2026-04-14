@@ -3,7 +3,7 @@ import {
   MessageSquare, FileText, Shield, ArrowRight, Scale, Bot, Zap,
   Globe, Home as HomeIcon, AlertTriangle, Briefcase, Sparkles,
   CheckCircle2, Search, BookOpen, Users, Award, ChevronRight,
-  Mic, ClipboardList, Star, Quote
+  Mic, ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -292,78 +292,6 @@ const Home = () => {
                   <Button size="sm" className="mt-4 w-full rounded-lg text-xs">
                     Connect with Lawyer
                   </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center">
-            <SectionBadge text="Testimonials" />
-            <h2 className="mt-4 font-heading text-3xl font-bold md:text-4xl">What Our Users Say</h2>
-            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Thousands of people trust NyayaAI for quick, reliable legal guidance.
-            </p>
-          </div>
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {[
-              {
-                name: "Ananya Verma",
-                role: "Small Business Owner, Delhi",
-                text: "NyayaAI helped me understand the GST implications for my business and draft a proper vendor agreement. It saved me thousands in lawyer fees!",
-                rating: 5,
-              },
-              {
-                name: "Rajesh Kumar",
-                role: "Student, Mumbai",
-                text: "I was wrongfully detained by police and didn't know my rights. NyayaAI instantly told me about Article 22 and Section 50 CrPC. Life-changing!",
-                rating: 5,
-              },
-              {
-                name: "Priya Nair",
-                role: "IT Professional, Bangalore",
-                text: "Facing harassment at work was terrifying. NyayaAI walked me through the POSH Act and helped me draft a formal complaint to the ICC.",
-                rating: 5,
-              },
-              {
-                name: "Mohit Agarwal",
-                role: "Tenant, Pune",
-                text: "My landlord refused to return my deposit. NyayaAI helped me draft a legal notice and guided me to the Consumer Forum. Got my money back!",
-                rating: 5,
-              },
-              {
-                name: "Sunita Devi",
-                role: "Homemaker, Lucknow",
-                text: "I didn't know I had the right to free legal aid. NyayaAI explained the NALSA Act and helped me connect with the District Legal Services Authority.",
-                rating: 4,
-              },
-              {
-                name: "Arjun Singh",
-                role: "Freelancer, Jaipur",
-                text: "A client refused to pay me for my work. NyayaAI helped me understand contract law and draft a demand letter. Settled within 2 weeks!",
-                rating: 5,
-              },
-            ].map((t) => (
-              <Card key={t.name} className="border shadow-[var(--card-shadow)] transition-all duration-300 hover:shadow-[var(--card-shadow-hover)] hover:-translate-y-1">
-                <CardContent className="p-6">
-                  <Quote className="mb-3 h-5 w-5 text-primary/30" />
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t.text}</p>
-                  <div className="mt-4 flex items-center gap-0.5">
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
-                    ))}
-                    {Array.from({ length: 5 - t.rating }).map((_, i) => (
-                      <Star key={i} className="h-3.5 w-3.5 text-muted-foreground/30" />
-                    ))}
-                  </div>
-                  <div className="mt-3 border-t pt-3">
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                  </div>
                 </CardContent>
               </Card>
             ))}
