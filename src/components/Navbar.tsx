@@ -10,6 +10,7 @@ const navLinks = [
   { to: "/chat", label: "AI Chat" },
   { to: "/documents", label: "Documents" },
   { to: "/rights", label: "Your Rights" },
+  { to: "/contact", label: "Contact" },
 ];
 
 const Navbar = () => {
