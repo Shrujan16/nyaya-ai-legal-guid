@@ -10,7 +10,58 @@ import { toast } from "@/components/ui/sonner";
 
 type Message = { role: "user" | "assistant"; content: string; timestamp: Date };
 
+type LangCode = "en" | "hi" | "kn" | "te" | "ta";
+
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/legal-chat`;
+
+const langLabels: Record<LangCode, string> = {
+  en: "EN",
+  hi: "हिं",
+  kn: "ಕನ್ನ",
+  te: "తెలు",
+  ta: "தமிழ்",
+};
+
+const langInstructions: Record<LangCode, string> = {
+  en: "",
+  hi: "\n\n(Please respond in Hindi, keeping legal terms in English)",
+  kn: "\n\n(Please respond in Kannada, keeping legal terms in English)",
+  te: "\n\n(Please respond in Telugu, keeping legal terms in English)",
+  ta: "\n\n(Please respond in Tamil, keeping legal terms in English)",
+};
+
+const langPlaceholders: Record<LangCode, { input: string; empty: string; emptyDesc: string; analyzing: string }> = {
+  en: {
+    input: "Type your legal question...",
+    empty: "AI Legal Assistant",
+    emptyDesc: "Ask any legal question and get structured analysis with Indian law references.",
+    analyzing: "AI is analyzing your case...",
+  },
+  hi: {
+    input: "अपना कानूनी सवाल टाइप करें...",
+    empty: "AI कानूनी सहायक",
+    emptyDesc: "कोई भी कानूनी सवाल पूछें और भारतीय कानून संदर्भों के साथ विश्लेषण प्राप्त करें।",
+    analyzing: "AI आपके मामले का विश्लेषण कर रहा है...",
+  },
+  kn: {
+    input: "ನಿಮ್ಮ ಕಾನೂನು ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ...",
+    empty: "AI ಕಾನೂನು ಸಹಾಯಕ",
+    emptyDesc: "ಯಾವುದೇ ಕಾನೂನು ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ ಮತ್ತು ಭಾರತೀಯ ಕಾನೂನು ಉಲ್ಲೇಖಗಳೊಂದಿಗೆ ವಿಶ್ಲೇಷಣೆ ಪಡೆಯಿರಿ.",
+    analyzing: "AI ನಿಮ್ಮ ಪ್ರಕರಣವನ್ನು ವಿಶ್ಲೇಷಿಸುತ್ತಿದೆ...",
+  },
+  te: {
+    input: "మీ చట్టపరమైన ప్రశ్నను టైప్ చేయండి...",
+    empty: "AI న్యాయ సహాయకుడు",
+    emptyDesc: "ఏదైనా చట్టపరమైన ప్రశ్న అడగండి మరియు భారతీయ చట్ట సూచనలతో విశ్లేషణ పొందండి.",
+    analyzing: "AI మీ కేసును విశ్లేషిస్తోంది...",
+  },
+  ta: {
+    input: "உங்கள் சட்ட கேள்வியை தட்டச்சு செய்யவும்...",
+    empty: "AI சட்ட உதவியாளர்",
+    emptyDesc: "எந்த சட்ட கேள்வியையும் கேளுங்கள், இந்திய சட்ட குறிப்புகளுடன் பகுப்பாய்வு பெறுங்கள்.",
+    analyzing: "AI உங்கள் வழக்கை பகுப்பாய்வு செய்கிறது...",
+  },
+};
 
 const suggestions = [
   "What are my rights if police arrest me?",
@@ -31,87 +82,92 @@ async function streamChat({
   onDone: () => void;
   onError: (err: string) => void;
 }) {
-  const resp = await fetch(CHAT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-    },
-    body: JSON.stringify({ messages }),
-  });
+  try {
+    const resp = await fetch(CHAT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ messages }),
+    });
 
-  if (!resp.ok) {
-    const data = await resp.json().catch(() => ({}));
-    onError(data.error || `Error ${resp.status}`);
-    return;
-  }
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}));
+      onError(data.error || `Error ${resp.status}`);
+      return;
+    }
 
-  if (!resp.body) {
-    onError("No response stream");
-    return;
-  }
+    if (!resp.body) {
+      onError("No response stream");
+      return;
+    }
 
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let textBuffer = "";
-  let streamDone = false;
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let textBuffer = "";
+    let streamDone = false;
 
-  while (!streamDone) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    textBuffer += decoder.decode(value, { stream: true });
+    while (!streamDone) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      textBuffer += decoder.decode(value, { stream: true });
 
-    let newlineIndex: number;
-    while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-      let line = textBuffer.slice(0, newlineIndex);
-      textBuffer = textBuffer.slice(newlineIndex + 1);
+      let newlineIndex: number;
+      while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+        let line = textBuffer.slice(0, newlineIndex);
+        textBuffer = textBuffer.slice(newlineIndex + 1);
 
-      if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (line.startsWith(":") || line.trim() === "") continue;
-      if (!line.startsWith("data: ")) continue;
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (line.startsWith(":") || line.trim() === "") continue;
+        if (!line.startsWith("data: ")) continue;
 
-      const jsonStr = line.slice(6).trim();
-      if (jsonStr === "[DONE]") {
-        streamDone = true;
-        break;
-      }
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") {
+          streamDone = true;
+          break;
+        }
 
-      try {
-        const parsed = JSON.parse(jsonStr);
-        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-        if (content) onDelta(content);
-      } catch {
-        textBuffer = line + "\n" + textBuffer;
-        break;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) onDelta(content);
+        } catch {
+          // incomplete JSON, put back
+          textBuffer = line + "\n" + textBuffer;
+          break;
+        }
       }
     }
-  }
 
-  // Final flush
-  if (textBuffer.trim()) {
-    for (let raw of textBuffer.split("\n")) {
-      if (!raw) continue;
-      if (raw.endsWith("\r")) raw = raw.slice(0, -1);
-      if (raw.startsWith(":") || raw.trim() === "") continue;
-      if (!raw.startsWith("data: ")) continue;
-      const jsonStr = raw.slice(6).trim();
-      if (jsonStr === "[DONE]") continue;
-      try {
-        const parsed = JSON.parse(jsonStr);
-        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-        if (content) onDelta(content);
-      } catch { /* ignore */ }
+    // Final flush
+    if (textBuffer.trim()) {
+      for (let raw of textBuffer.split("\n")) {
+        if (!raw) continue;
+        if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+        if (raw.startsWith(":") || raw.trim() === "") continue;
+        if (!raw.startsWith("data: ")) continue;
+        const jsonStr = raw.slice(6).trim();
+        if (jsonStr === "[DONE]") continue;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) onDelta(content);
+        } catch { /* ignore */ }
+      }
     }
-  }
 
-  onDone();
+    onDone();
+  } catch (err) {
+    onError(err instanceof Error ? err.message : "Network error. Please try again.");
+  }
 }
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [language, setLanguage] = useState<"en" | "hi">("en");
+  const [language, setLanguage] = useState<LangCode>("en");
   const [mode, setMode] = useState<"chat" | "case">("chat");
   const [caseInput, setCaseInput] = useState("");
   const [caseResult, setCaseResult] = useState<string | null>(null);
@@ -131,33 +187,28 @@ const Chat = () => {
     setIsTyping(true);
 
     let assistantSoFar = "";
-    const upsertAssistant = (chunk: string) => {
-      assistantSoFar += chunk;
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant" && !last.content.includes("📋")) {
-          // Still streaming, update last
-          return prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
-          );
-        }
-        if (last?.role === "assistant") {
-          return prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
-          );
-        }
-        return [...prev, { role: "assistant" as const, content: assistantSoFar, timestamp: new Date() }];
-      });
-    };
 
     const chatHistory = newMessages.map((m) => ({ role: m.role, content: m.content }));
-    if (language === "hi") {
-      chatHistory[chatHistory.length - 1].content += "\n\n(Please respond in Hindi, keeping legal terms in English)";
+    const instruction = langInstructions[language];
+    if (instruction) {
+      chatHistory[chatHistory.length - 1].content += instruction;
     }
 
     await streamChat({
       messages: chatHistory,
-      onDelta: (chunk) => upsertAssistant(chunk),
+      onDelta: (chunk) => {
+        assistantSoFar += chunk;
+        const currentContent = assistantSoFar;
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant") {
+            return prev.map((m, i) =>
+              i === prev.length - 1 ? { ...m, content: currentContent } : m
+            );
+          }
+          return [...prev, { role: "assistant" as const, content: currentContent, timestamp: new Date() }];
+        });
+      },
       onDone: () => setIsTyping(false),
       onError: (err) => {
         toast.error(err);
@@ -172,6 +223,7 @@ const Chat = () => {
     setCaseResult(null);
 
     let result = "";
+    const instruction = langInstructions[language];
     const casePrompt = `Analyze this legal situation and provide a structured response with:
 1. Issue Summary
 2. Legal Risk Level (Low/Medium/High) with explanation
@@ -179,7 +231,7 @@ const Chat = () => {
 4. Suggested Action (numbered steps)
 5. Legal References table
 
-Situation: ${caseInput.trim()}`;
+Situation: ${caseInput.trim()}${instruction}`;
 
     await streamChat({
       messages: [{ role: "user", content: casePrompt }],
@@ -210,6 +262,8 @@ Situation: ${caseInput.trim()}`;
       .replace(/\n/g, "<br/>");
   };
 
+  const t = langPlaceholders[language];
+
   return (
     <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-4xl flex-col px-4">
       {/* Top bar */}
@@ -223,26 +277,18 @@ Situation: ${caseInput.trim()}`;
             <p className="text-xs text-muted-foreground">AI-Powered · Indian Law · Structured Analysis</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant={language === "en" ? "default" : "outline"}
-            size="sm"
-            className="h-7 rounded-lg px-2 text-xs"
-            onClick={() => setLanguage("en")}
-          >
-            EN
-          </Button>
-          <Button
-            variant={language === "hi" ? "default" : "outline"}
-            size="sm"
-            className="h-7 rounded-lg px-2 text-xs"
-            onClick={() => setLanguage("hi")}
-          >
-            हिं
-          </Button>
-          <Button variant="outline" size="sm" className="h-7 gap-1 rounded-lg px-2 text-xs">
-            <Mic className="h-3 w-3" /> Voice
-          </Button>
+        <div className="flex items-center gap-1 flex-wrap">
+          {(Object.keys(langLabels) as LangCode[]).map((code) => (
+            <Button
+              key={code}
+              variant={language === code ? "default" : "outline"}
+              size="sm"
+              className="h-7 rounded-lg px-2 text-xs"
+              onClick={() => setLanguage(code)}
+            >
+              {langLabels[code]}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -266,13 +312,13 @@ Situation: ${caseInput.trim()}`;
               Describe your legal situation and get a structured analysis with risk assessment.
             </p>
             <Textarea
-              placeholder={language === "en" ? "Describe your situation in detail..." : "अपनी स्थिति का विस्तार से वर्णन करें..."}
+              placeholder={t.input}
               value={caseInput}
               onChange={(e) => setCaseInput(e.target.value)}
               className="mt-3 min-h-[100px] rounded-xl"
             />
             <Button onClick={analyzeCase} disabled={!caseInput.trim() || caseAnalyzing} className="mt-3 w-full rounded-xl">
-              {caseAnalyzing ? "AI is analyzing your case..." : "Analyze My Case"}
+              {caseAnalyzing ? t.analyzing : "Analyze My Case"}
             </Button>
             {caseResult && (
               <div className="mt-4 rounded-xl border bg-muted/50 p-4">
@@ -296,14 +342,8 @@ Situation: ${caseInput.trim()}`;
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-[hsl(230,80%,60%)] text-primary-foreground shadow-lg shadow-primary/25">
                   <Sparkles className="h-8 w-8" />
                 </div>
-                <h2 className="font-heading text-2xl font-bold">
-                  {language === "en" ? "AI Legal Assistant" : "AI कानूनी सहायक"}
-                </h2>
-                <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                  {language === "en"
-                    ? "Ask any legal question and get structured analysis with Indian law references."
-                    : "कोई भी कानूनी सवाल पूछें और भारतीय कानून संदर्भों के साथ विश्लेषण प्राप्त करें।"}
-                </p>
+                <h2 className="font-heading text-2xl font-bold">{t.empty}</h2>
+                <p className="mt-2 max-w-md text-sm text-muted-foreground">{t.emptyDesc}</p>
                 <div className="mt-2 flex gap-2">
                   <Badge variant="secondary" className="text-xs">IPC</Badge>
                   <Badge variant="secondary" className="text-xs">CrPC</Badge>
@@ -369,9 +409,7 @@ Situation: ${caseInput.trim()}`;
                           <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:150ms]" />
                           <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:300ms]" />
                         </div>
-                        <span className="text-xs font-medium text-muted-foreground">
-                          {language === "en" ? "AI is analyzing your case..." : "AI आपके मामले का विश्लेषण कर रहा है..."}
-                        </span>
+                        <span className="text-xs font-medium text-muted-foreground">{t.analyzing}</span>
                       </div>
                     </Card>
                   </div>
@@ -393,7 +431,7 @@ Situation: ${caseInput.trim()}`;
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={language === "en" ? "Type your legal question..." : "अपना कानूनी सवाल टाइप करें..."}
+                placeholder={t.input}
                 className="rounded-xl shadow-sm"
               />
               <Button type="submit" size="icon" className="shrink-0 rounded-xl shadow-sm" disabled={!input.trim() || isTyping}>
