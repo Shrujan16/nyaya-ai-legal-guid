@@ -2,33 +2,36 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
+const getInitialTheme = (): boolean => {
+  if (typeof window === "undefined") return false;
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") return true;
+  if (saved === "light") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+};
+
 const ThemeToggle = () => {
-  const [dark, setDark] = useState(() => {
-    if (typeof window !== "undefined") {
-      return document.documentElement.classList.contains("dark");
-    }
-    return false;
-  });
+  const [dark, setDark] = useState<boolean>(getInitialTheme);
 
   useEffect(() => {
+    const root = document.documentElement;
     if (dark) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   }, [dark]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") {
-      setDark(true);
-    }
-  }, []);
-
   return (
-    <Button variant="ghost" size="icon" onClick={() => setDark(!dark)} className="rounded-lg">
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setDark((d) => !d)}
+      className="rounded-lg"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+    >
       {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>
   );
