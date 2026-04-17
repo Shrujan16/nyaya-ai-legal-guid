@@ -30,7 +30,7 @@ const features = [
   {
     icon: Globe,
     title: "Multi-language Support",
-    description: "Access legal guidance in English and Hindi with seamless language switching.",
+    description: "Access legal guidance in English, Hindi, Kannada, Telugu and Tamil with seamless language switching.",
     link: "/chat",
   },
   {
