@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Welcome to Nyaya Ai - Legal Ai Assistant
 
 TODO: Document your project here
